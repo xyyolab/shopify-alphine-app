@@ -1,8 +1,9 @@
 @extends('shopify-app::layouts.default')
 
 @section('content')
-<!-- You are: (shop domain name) -->
-<p>You are: {{ Auth::user()->name }}</p>
+
+
+
 @endsection
 
 @section('scripts')
@@ -15,7 +16,7 @@
         var Button = actions.Button;
         var Redirect = actions.Redirect;
         var titleBarOptions = {
-            title: 'Welcome',
+            title: 'Dashboard',
         };
         var myTitleBar = TitleBar.create(app, titleBarOptions);
 </script>
