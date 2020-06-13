@@ -20,25 +20,9 @@ Route::middleware(['auth.shopify'])->group(function () {
         return view('dashboard');
     })->name('home');
 
+    Route::post('/configureTheme', "SettingController@configureTheme");
+
     Route::view('/products', 'products');
     Route::view('/customers', 'customers');
     Route::view('/settings', 'settings');
-    Route::get('/test', function () {
-        $shop = Auth::user();
-        $themes = $shop->api()->rest('GET', '/admin/themes.json')['body']->container['themes'];
-
-        $activeThemeId = '';
-        foreach ($themes as $theme) {
-            if ($theme['role'] === 'main') {
-                $activeThemeId = $theme['id'];
-            }
-        }
-        $snippet = 'Your snippet code';
-
-        $payload = ['asset' => ['key' => 'snippets/wishlikist-app.liquid', 'value' => $snippet]];
-
-        $shop->api()->rest('PUT', 'admin/themes/'.$activeThemeId. '/assets.json', $payload);
-
-        return 'SUCCESS';
-    });
 });

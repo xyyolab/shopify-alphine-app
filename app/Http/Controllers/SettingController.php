@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SettingController extends Controller
 {
@@ -12,9 +13,24 @@ class SettingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function configureTheme()
     {
-        //
+        $shop = Auth::user();
+        $themes = $shop->api()->rest('GET', '/admin/themes.json')['body']->container['themes'];
+
+        $activeThemeId = '';
+        foreach ($themes as $theme) {
+            if ($theme['role'] === 'main') {
+                $activeThemeId = $theme['id'];
+            }
+        }
+        $snippet = 'Your snippet code live';
+
+        $payload = ['asset' => ['key' => 'snippets/wishlikist-app.liquid', 'value' => $snippet]];
+
+        $shop->api()->rest('PUT', 'admin/themes/'.$activeThemeId. '/assets.json', $payload);
+
+        return 'SUCCESS';
     }
 
     /**
