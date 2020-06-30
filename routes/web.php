@@ -1,5 +1,6 @@
 <?php
 
+use App\Setting;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,7 +18,9 @@ use Illuminate\Support\Facades\Auth;
 
 Route::middleware(['auth.shopify'])->group(function () {
     Route::get('/', function () {
-        return view('dashboard');
+        $shop = Auth::user();
+        $settings = Setting::where('shop_id', $shop->name)->first();
+        return view('dashboard', compact('settings'));
     })->name('home');
 
     Route::post('/configureTheme', "SettingController@configureTheme");

@@ -30,6 +30,11 @@ class SettingController extends Controller
 
         $shop->api()->rest('PUT', 'admin/themes/'.$activeThemeId. '/assets.json', $payload);
 
+        Setting::updateOrCreate(
+            ['shop_id' => $shop->name],
+            ['activated' => true]
+        );
+
         return 'SUCCESS';
     }
 
