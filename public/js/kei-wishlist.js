@@ -5985,6 +5985,7 @@ __webpack_require__(/*! noty/src/themes/mint.scss */ "./node_modules/noty/src/th
 window.Noty = __webpack_require__(/*! noty */ "./node_modules/noty/lib/noty.js");
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 var URL = 'https://wishlikist.test';
+var wishlistButton = document.querySelector('.kei-wishlist-button');
 
 var addWishlist = function addWishlist(customer, product_id) {
   axios.post(URL + '/api/addToWishlist', {
@@ -6003,25 +6004,57 @@ var addWishlist = function addWishlist(customer, product_id) {
   //   }).show()
 };
 
-var removeWishlist = function removeWishlist() {
-  new Noty({
-    type: 'warning',
-    layout: 'topRight',
-    timeout: 3000,
-    text: 'Removed from wishlist'
-  }).show();
+var removeWishlist = function removeWishlist(customer, product_id) {
+  axios.post(URL + '/api/removeWishlist', {
+    shop_id: Shopify.shop,
+    customer_id: customer,
+    product_id: product_id
+  }).then(function (response) {
+    console.log(response);
+  })["catch"](function (error) {
+    console.log(error);
+  }); //   new Noty({
+  //     type: 'warning',
+  //     layout: 'topRight',
+  //     timeout: 3000,
+  //     text: 'Removed from wishlist'
+  //   }).show()
 };
 
-var wishlistButton = document.querySelector('.kei-wishlist-button');
-wishlistButton.addEventListener('click', function () {
-  if (wishlistButton.classList.contains('active')) {
-    wishlistButton.classList.remove('active');
-    removeWishlist();
-  } else {
-    wishlistButton.classList.add('active');
-    addWishlist(wishlistButton.dataset.customer, wishlistButton.dataset.product);
-  }
-});
+var checkWishlist = function checkWishlist(customer, product_id) {
+  axios.post(URL + '/api/checkWishlist', {
+    shop_id: Shopify.shop,
+    customer_id: customer,
+    product_id: product_id
+  }).then(function (response) {
+    if (response.data == 1) {
+      wishlistButton.classList.add('active');
+    }
+  })["catch"](function (error) {
+    console.log(error);
+  });
+};
+
+if (meta.page.pageType === 'product') {
+  wishlistButton.addEventListener('click', function () {
+    var customer = wishlistButton.dataset.customer;
+    var id = wishlistButton.dataset.product;
+
+    if (wishlistButton.classList.contains('active')) {
+      wishlistButton.classList.remove('active');
+      removeWishlist(customer, id);
+    } else {
+      wishlistButton.classList.add('active');
+      addWishlist(customer, id);
+    }
+  });
+}
+
+if (wishlistButton) {
+  var customer = wishlistButton.dataset.customer;
+  var id = wishlistButton.dataset.product;
+  checkWishlist(customer, id);
+}
 
 /***/ }),
 

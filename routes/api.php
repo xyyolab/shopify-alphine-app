@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,3 +16,5 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth.shopify'])->group(function () {
 });
 Route::post('addToWishlist', 'WishlistController@store');
+Route::post('removeWishlist', 'WishlistController@destroy');
+Route::post('checkWishlist', 'WishlistController@check');
