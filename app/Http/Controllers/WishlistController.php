@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Wishlist;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class WishlistController extends Controller
 {
@@ -96,5 +97,44 @@ class WishlistController extends Controller
             ->where('product_id', $request['product_id'])->first();
 
         return $item ? 1 : 0;
+    }
+
+    public function test()
+    {
+        $shop = Auth::user();
+        $shopWishlists = Wishlist::where('shop_id', $shop->name)->orderBy('updated_at', 'desc')->get();
+        $lists = [];
+        foreach ($shopWishlists as $item) {
+            array_push($lists, "gid://shopify/Product/{$item->product_id}");
+        }
+
+        $mylists = json_encode($lists);
+
+        $query = "
+            {
+                nodes(ids:  $mylists ) {
+                ... on Product {
+                    id
+                    title
+                    handle
+                    featuredImage {
+                      originalSrc
+                    }
+                    totalInventory
+                    vendor
+                    onlineStorePreviewUrl
+                    priceRange{
+                    maxVariantPrice{
+                        currencyCode
+                        amount
+                        }
+                    }
+                    }
+                }
+            }
+        ";
+
+        $products = $shop->api()->graph($query);
+        return view('partials.wishlist-table', compact('products'));
     }
 }

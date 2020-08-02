@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-
 Route::middleware(['auth.shopify'])->group(function () {
     Route::get('/', function () {
         $shop = Auth::user();
@@ -23,7 +22,9 @@ Route::middleware(['auth.shopify'])->group(function () {
         return view('dashboard', compact('settings'));
     })->name('home');
 
-    Route::post('/configureTheme', "SettingController@configureTheme");
+    Route::get('/wishlists', 'WishlistController@test')->name('test');
+
+    Route::post('/configureTheme', 'SettingController@configureTheme');
 
     Route::view('/products', 'products');
     Route::view('/customers', 'customers');
